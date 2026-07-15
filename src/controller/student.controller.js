@@ -1,63 +1,94 @@
-const students=[
-    {id:1,name:"John Doe",age:20},
-    {id:2,name:"raj",age:22},
-    {id:3,name:"Bob Johnson",age:19}
-]
-const addStudent = (req, res) => {
-    const newStudent = req.body;
-    students.push(newStudent);
+import prisma from "../db/db.js";
+
+const addStudent = async(req, res) => {
+    try{
+        const { name, email, password,role } = req.body;
+        const newStudent = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password,
+                role,
+            },
+        });
     
-    res.json({
-        message: "Student added successfully",
-        students,
-    });
+        res.json({
+            message: "Student added successfully",
+            student: newStudent,
+        });
+    } catch (error) {
+      console.log("error from addStudent controller: ", error);
+        res.status(500).json({
+            message: "Error adding student",
+        });
+    }
 };
 
-const updateStudent = (req, res) => {
+
+const updateStudent = async (req, res) => {
+  try {
     const id = Number(req.params.id);
-    const index = students.findIndex(student => student.id === id);
 
-    if (index === -1) {
-        return res.json({ message: "Student not found" });
-    }
-
-    const updatedStudent = { ...students[index], ...req.body };
-    students[index] = updatedStudent;
+    const student = await prisma.user.update({
+      where: { id },
+      data: req.body,
+    });
 
     res.json({
-        message: "Student updated successfully",
-        students
+      message: "Student updated successfully",
+      student,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-const deleteStudent = (req, res) => {
+const deleteStudent = async (req, res) => {
+  try {
     const id = Number(req.params.id);
-    const index = students.findIndex(student => student.id === id);
 
-    if (index === -1) {
-        return res.json({ message: "Student not found" });
-    }
+    const existing = await prisma.user.findUnique({ where: { id } });
 
-    students.splice(index, 1);
+    if (existing) {
+      await prisma.user.delete({
+        where: { id },
+      });
 
-    res.json({
+      res.json({
         message: "Student deleted successfully",
-        students
+      });
+    } else {
+      throw new Error("this id doesnt exists");
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Error occurred while deleting student: " + error.message,
     });
+  }
 };
-const getStudent = (req, res) => {
-    console.log(req.query);
 
+const getStudent = async (req, res) => {
+  try {
     const { name } = req.query;
 
-    if (name) {
-        const filteredStudents = students.filter(
-            student => student.name.toLowerCase() === name.toLowerCase()
-        );
-        return res.json(filteredStudents);
-    }
+    const students = await prisma.user.findMany({
+      where: name
+        ? {
+            name: {
+              equals: name,
+              mode: "insensitive",
+            },
+          }
+        : {},
+    });
 
     res.json(students);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
+
 
 export { getStudent, addStudent, updateStudent, deleteStudent };    

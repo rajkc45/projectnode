@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import studentrouter from "./routes/Student.routes.js"; 
 
 const app=express();
 app.use(cors({
@@ -10,7 +11,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.static("public"));
 app.use(cookieParser());
-
+app.use("/api/v1",studentrouter);
 
 const PORT=3000;  
 // const students=[
@@ -32,18 +33,18 @@ const PORT=3000;
 
 //     res.json(students);
 // });
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-// });
-// app.post("/students",(req,res) =>{
-//     const newStudent=req.body;
-//     students.push(newStudent);
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
+app.get("/",(req,res) =>{
+    // const newStudent=req.body;
+    // students.push(newStudent);
     
-//     res.json({
-//         message:"Student added successfully",
-//         students,
-//     });
-// });
+    res.json({
+        message:"Student added successfully",
+        // students,
+    });
+});
 // app.delete("/students/:id",(req,res) =>{
 //     const id=Number(req.params.id);
 //     const index = students.findIndex(student => student.id === id);

@@ -3,11 +3,11 @@ import { getStudent, addStudent, updateStudent, deleteStudent } from "../control
 
 const router = Router();
 
-router.use(verifyJWT); // Apply JWT verification middleware to all routes
+// router.use(verifyJWT); // Apply JWT verification middleware to all routes
 
-router.get("/Students", getStudent);
-router.post("/Students", addStudent);
-router.put("/Students/:id", updateStudent);
-router.delete("/Students/:id", deleteStudent);
+router.get("/students", getStudent);
+router.post("/students", addStudent);
+router.put("/students/:id", updateStudent);
+router.delete("/students/:id", deleteStudent);
 
 export default router;
