@@ -1,4 +1,6 @@
 import prisma from "../db/db.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const addStudent = async(req, res) => {
     try{
@@ -12,10 +14,9 @@ const addStudent = async(req, res) => {
             },
         });
     
-        res.json({
-            message: "Student added successfully",
-            student: newStudent,
-        });
+        return res
+        .status(402)
+        .json(new ApiResponse(402,newStudent,"student added sucessfully"))
     } catch (error) {
       console.log("error from addStudent controller: ", error);
         res.status(500).json({
@@ -39,8 +40,10 @@ const updateStudent = async (req, res) => {
       student,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    return res
+    .status(500)
+    .json(new ApiError(500,"error occured while updating")) };
+  
 };
 
 const deleteStudent = async (req, res) => {
@@ -61,11 +64,12 @@ const deleteStudent = async (req, res) => {
       throw new Error("this id doesnt exists");
     }
   } catch (error) {
-    res.status(500).json({
-      message: "Error occurred while deleting student: " + error.message,
-    });
-  }
-};
+    return res
+    .status(501)
+    .json(new ApiError(501, "Error occurred while deleting student"));
+    };
+  };
+  
 
 const getStudent = async (req, res) => {
   try {
@@ -84,9 +88,9 @@ const getStudent = async (req, res) => {
 
     res.json(students);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    return res
+      .status(500)
+      .json(new ApiError(500, "Error occurred while fetching students"));
   }
 };
 

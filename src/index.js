@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import studentrouter from "./routes/Student.routes.js"; 
+import userrouter from "./routes/User.routes.js";
+import { ApiError } from "./utils/ApiError.js";
 
 const app=express();
 app.use(cors({
@@ -12,6 +14,7 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use("/api/v1",studentrouter);
+app.use("/api/v1/users",userrouter);
 
 const PORT=3000;  
 // const students=[
@@ -44,6 +47,24 @@ app.get("/",(req,res) =>{
         message:"Student added successfully",
         // students,
     });
+});
+app.use((err, _req, res, _next) => {
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      statusCode: err.statusCode,
+      message: err.message,
+      errors: err.errors,
+      success: false,
+    });
+  }
+
+  console.error("Unhandled backend error:", err);
+
+  return res.status(500).json({
+    statusCode: 500,
+    message: "Internal Server Error",
+    success: false,
+  });
 });
 // app.delete("/students/:id",(req,res) =>{
 //     const id=Number(req.params.id);
