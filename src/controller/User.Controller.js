@@ -50,7 +50,7 @@ const registerUser = asyncHandler(
       throw new ApiError(400, "Invalid user data with errors", result.error);
     }
 
-    const { fullName, email, password } = result.data;
+    const { name, email, password, role } = result.data;
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -62,14 +62,14 @@ const registerUser = asyncHandler(
     const user = await prisma.user.create({
       data: {
         email,
-        fullName,
-        role: "buyer",
+        name,
+        role,
         password: encryptedPassword,
       },
       select: {
         id: true,
         email: true,
-        fullName: true,
+        name: true,
         role: true,
         createdAt: true,
         refreshToken: true,
@@ -115,7 +115,7 @@ const loginUser = asyncHandler(
       select: {
         id: true,
         email: true,
-        fullName: true,
+        name: true,
       },
     });
 

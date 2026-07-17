@@ -13,7 +13,7 @@ const addStudent = async(req, res) => {
                 role,
             },
         });
-    
+       console.log("request.user",req.user)
         return res
         .status(402)
         .json(new ApiResponse(402,newStudent,"student added sucessfully"))
